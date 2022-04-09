@@ -1,0 +1,68 @@
+---
+
+- name: Atualização de todos os pacotes do sistema (Debian)
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Instalar pacote 'acl'
+  apt:
+    name: acl
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Verificar se é necessário reiniciar após update
+  register: reboot_necessario
+  stat: 
+    path: /var/run/reboot-required
+    get_checksum: no
+
+- name: Reinicar a máquina 
+  reboot:
+    msg: "Reboot feito após atualização do sistema"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when: reboot_necessario.stat.exists
+
+- name: Instalação do pacote UFW (Uncomplicated Firewall)
+  apt:
+    name: ufw
+    state: latest
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Garantir que o serviço está em execução 
+  service:
+    name: ufw
+    state: started
+
+- name: Permitindo firewall_allowed_tcp
+  ufw:
+    rule: allow
+    port: "{{ item | int }}"
+    proto: tcp
+  with_items: "{{firewall_allowed_tcpp}}"
+  notify:
+    - restart_ufw
+
+- name: Permitindo firewall_allowed_udp
+  ufw:
+    rule: allow
+    port: "{{ item | int}}"
+    proto: udp
+  with_items: "{{firewall_allowed_udpp}}"
+  notify:
+    - restart_ufw
+
+- name: Configurando ACLs padrão
+  ufw:
+    state: enabled
+    policy: reject
+  notify:
+    - restart_ufw

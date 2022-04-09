@@ -1,0 +1,45 @@
+---
+- name: GlusterFS deployment 1 - Replicated
+  hosts: gluster
+  become: yes
+  become_method: sudo
+
+  vars_files:
+    - group_vars/all.yml
+
+  roles:
+    - roles/common
+    - roles/os-glusterfs
+
+  tasks:
+    - name: Garantir que os diretorios existem
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0775
+      with_items:
+        - "{{ gluster_brick_dir }}"
+        - "{{ gluster_mount_dir }}"
+      #become: true
+      #become_user: "{{gluster_user}}"
+
+    - name: Configurar o volume 
+      gluster.gluster.gluster_volume:
+        state: present
+        name: "{{ gluster_brick_name }}"
+        brick: "{{ gluster_brick_dir }}"
+        replicas: 3
+        cluster: "{{ groups.gluster | join(',') }}"
+        force: yes
+      run_once: true
+      #become: true
+      #become_user: "{{gluster_user}}"
+
+    - name: Garantir que o volume está montado.
+      mount:
+        name: "{{ gluster_mount_dir }}"
+        src: "{{ inventory_hostname }}:/{{ gluster_brick_name }}"
+        fstype: glusterfs
+        opts: "defaults,_netdev"
+        state: mounted
+      become: true

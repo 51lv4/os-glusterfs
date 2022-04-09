@@ -1,0 +1,7 @@
+---
+# group_vars for provisioning
+
+gluster_user: gluster
+gluster_mount_dir: /mnt/gluster
+gluster_brick_dir: /srv/gluster/brick
+gluster_brick_name: os-glusterlab

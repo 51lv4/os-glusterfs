@@ -1,0 +1,42 @@
+---
+
+# Configuração da Firewall
+
+- name: Atualizar o sistema
+  yum:
+    name: "*"
+    state: latest
+
+- name: Instalar o pacote 'needs-restarting'
+  yum:
+    name: needs-restarting
+    state: latest
+
+- name: Verificar se é necessário reiniciar após update
+  shell: needs-restarting -r
+  failed_when: false
+  register: reboot_necessario
+  changed_when: false
+
+- name: Reinicar a máquina 
+  reboot:
+    msg: "Reboot feito após atualização do sistema"
+    connect_timeout: 5
+    reboot_timeout: 300
+    pre_reboot_delay: 0
+    post_reboot_delay: 30
+    test_command: uptime
+  when: reboot_necessario.rc != 0
+
+- name: Instalação do pacote firewalld
+  yum:
+    name: firewalld
+    state: latest
+    update_cache: yes
+
+- name: Garantir que o serviço está em execução
+  service:
+    name: firewalld
+    state: started
+
+# TODO - Setup do serviço firewalld 

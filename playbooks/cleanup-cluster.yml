@@ -1,0 +1,36 @@
+- name: GlusterFS - Delete a volume 
+  hosts: gluster
+  become: yes
+  become_method: sudo
+
+  vars_files:
+    - ../group_vars/vars.yml
+
+  tasks:
+  - name: "Apagar volume {{gluster_brick_name}}"
+    gluster_volume:
+      name: "{{gluster_brick_name}}"
+      state: absent
+    run_once: true
+
+  - name: Desmontar os volumes em todos os nós
+    mount:
+      name: "{{ gluster_mount_dir }}"
+      src: "{{ inventory_hostname }}:/{{ gluster_brick_name }}"
+      fstype: glusterfs
+      opts: "defaults,_netdev"
+      state: absent
+
+  - name: Apagar os diretórios
+    file:
+      path: "{{ item }}"
+      state: absent
+      mode: 0775
+    with_items:
+      - "{{ gluster_brick_dir }}"
+      - "{{ gluster_mount_dir }}"
+
+
+
+
+

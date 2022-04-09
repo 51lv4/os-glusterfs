@@ -1,0 +1,5 @@
+---
+# defaults file for common
+
+gluster_user: gluster
+gluster_usergroup: gluster

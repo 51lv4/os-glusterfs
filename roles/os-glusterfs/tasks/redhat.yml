@@ -1,0 +1,15 @@
+---
+# Configuração do repositório e instalação dos 
+# pacotes para sistemas operativos da família RHEL
+
+- name: Instalação do repositório
+  yum:
+    name: centos-release-gluster{{ glusterfs_rhrepo_versao }}
+    state: present
+
+- name: Instalação do GlusterFS (servidor e cliente)
+  yum: 
+    name: 
+      - glusterfs-server
+      - glusterfs-client
+    state: present 

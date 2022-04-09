@@ -1,0 +1,30 @@
+---
+- name: GlusterFS Host Connection to Cluster.
+  hosts: localhost
+  connection: local
+  become: yes
+  #become_method: sudo
+  gather_facts: no
+  vars:
+    - gfshc_node_ip: 172.16.0.10
+    - gfshc_mount_dir: /mnt/gluster
+    - gluster_brick_name: os-glusterlab
+
+  tasks:
+  - name: Desmontar o volume
+    mount:
+      name: "{{ gfshc_mount_dir }}"
+      src: "{{ gfshc_node_ip }}:/{{ gluster_brick_name }}"
+      fstype: glusterfs
+      boot: no
+      opts: "defaults,_netdev"
+      state: absent
+      
+  - name: Apagar o diretório do volume
+    file:
+      path: "{{ gfshc_mount_dir }}"
+      state: absent
+
+
+
+

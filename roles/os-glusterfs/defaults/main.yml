@@ -1,0 +1,14 @@
+---
+# defaults file for os-glusterfs
+
+# Ubuntu
+glusterfs_ppa_usar: true
+glusterfs_ppa_versao: "8"
+
+# RHEL
+glusterfs_rhrepo_versao: ""
+
+# Sistema
+gluster_user: gluster
+gluster_usergroup: gluster
+glusterfs_daemon: glusterd

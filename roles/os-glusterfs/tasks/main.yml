@@ -1,0 +1,28 @@
+---
+# tasks file for os-glusterfs
+
+- name: Instalação do GlusterFS em Red Hat
+  import_tasks: redhat.yml
+  when: ansible_facts['os_family']|lower == 'redhat'
+
+- name: Instalação do GlusterFS em Debian.
+  import_tasks: debian.yml
+  when: ansible_facts['os_family']|lower == 'debian'
+
+- name: Definir setuid para que o utilizador possa correr gluster como root
+  file: 
+    dest: /usr/sbin/gluster
+    mode: u+s
+
+- name: Garantir que o GlusterFS está a correr e ativo no boot
+  service: 
+    name: "{{ glusterfs_daemon }}" 
+    state: started 
+    enabled: yes
+
+
+- name: Cria uma pool de armazenamento
+  gluster.gluster.gluster_peer:
+    state: present
+    nodes: "{{groups['gluster']}}"
+  #run_once: true

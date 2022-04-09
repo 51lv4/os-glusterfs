@@ -1,0 +1,21 @@
+---
+
+- name: Adicionar PPA à lista de repositórios 
+  apt_repository:
+    repo: 'ppa:gluster/glusterfs-{{ glusterfs_ppa_versao }}'
+    state: present
+    update_cache: yes
+  register: glusterfs_ppa_adicionado
+  when: glusterfs_ppa_usar
+
+- name: Garantir uma reinstalação limpa do GlusterFS.
+  apt:
+    name: ['glusterfs-client', 'glusterfs-server']
+    state: absent
+  when: glusterfs_ppa_adicionado.changed
+
+- name: Instalar GlusterFS (client e server)
+  apt:
+    name: ['glusterfs-client', 'glusterfs-server']
+    state: present
+    update_cache: true

@@ -1,0 +1,26 @@
+---
+# vars file for common
+
+# Configuração da firewall
+firewall_allowed_tcpp:
+  - 22
+
+  # GlusterFS
+  - 111     # rpc port mapper
+  - 2049    # Gluster 3.4+ port mapper
+  - 24007   # Gluster Deamon
+  - 24008   # Infiniband 
+
+  # 24009+ para Gluster <= 3.3; 49152+ para Gluster >= 3.4 (para cada brick por volume!!).
+  - 49152
+  - 49153
+  - 49154
+  
+  # Gluster inline NFS server.
+  - 38465
+  - 38466
+  - 38467
+
+firewall_allowed_udpp:
+  - 111     # rpc port mapper
+

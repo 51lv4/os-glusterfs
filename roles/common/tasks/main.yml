@@ -1,0 +1,25 @@
+---
+# Este playbook corre todas as plays comuns a todos os servidores
+
+- name: Criar o ficheiro /etc/hosts com as os endereços de todos os nos do cluster
+  template: src=hosts.j2 dest=/etc/hosts
+
+
+- name: Criação do grupo
+  group:
+    name: "{{ gluster_usergroup }}"
+    state: present
+
+- name: Criar o utilizador glusterfs
+  user: 
+    name: "{{gluster_user}}" 
+    group: "{{gluster_usergroup}}"
+    comment: "GlusterFS"
+
+- name: Tarefas específicas da plataforma RedHat
+  import_tasks: redhat.yml
+  when: ansible_facts['os_family']|lower == 'redhat'
+
+- name: Tarefas específicas da plataforma Debian
+  import_tasks: debian.yml
+  when: ansible_facts['os_family']|lower == 'debian'
