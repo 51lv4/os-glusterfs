@@ -1,3 +1,3 @@
 # os-glusterfs
 
-Playbooks and Vagrantfile to automatically deploy a 3 node GlusterFS cluster.
+Playbooks and Vagrantfile to automatically provision a 3 node GlusterFS cluster.
